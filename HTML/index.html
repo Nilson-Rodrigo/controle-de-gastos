@@ -1,11 +1,87 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Controle de Gastos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/CSS/style.css">
 </head>
 <body>
-    
+  <div class="wrap">
+    <header>
+      <h1 class="brand">Controle de Gastos</h1>
+      <div class="subtitle">Seu assistente financeiro pessoal.</div>
+    </header>
+
+    <aside class="sidebar">
+      <div class="card">
+        <div class="small-title">Saldo Atual</div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div class="big-amount">R$ 0,00</div>
+            <div class="muted">Saldo total disponível</div>
+          </div>
+          <div style="opacity:0.35">⚖️</div>
+        </div>
+      </div>
+
+      <div class="card receitas">
+        <div class="small-title">Receitas</div>
+        <div class="big-amount">R$ NaN</div>
+        <div class="muted">Total de receitas no período</div>
+      </div>
+
+      <div class="card despesas">
+        <div class="small-title">Despesas</div>
+        <div class="big-amount">R$ NaN</div>
+        <div class="muted">Total de despesas no período</div>
+      </div>
+    </aside>
+
+    <main class="main-column">
+      <section class="panel">
+        <h2>Adicionar Transação</h2>
+        <p>Adicione uma nova receita ou despesa para monitorar suas finanças.</p>
+
+        <div class="tabs" role="tablist" aria-label="Tipos de transação">
+          <div class="tab active">Receita</div>
+          <div class="tab">Despesa</div>
+        </div>
+
+        <form style="margin-top:6px">
+          <label class="small-title" style="margin-bottom:6px;display:block">Descrição</label>
+          <input class="input" type="text" placeholder="Ex: Salário, Aluguel">
+
+          <div style="height:12px"></div>
+
+          <div class="form-grid">
+            <div>
+              <label class="small-title" style="display:block;margin-bottom:6px">Valor</label>
+              <input class="input" type="text" placeholder="R$ 0,00">
+            </div>
+            <div>
+              <label class="small-title" style="display:block;margin-bottom:6px">Data</label>
+              <input class="input" type="date" value="2025-08-11">
+            </div>
+          </div>
+
+          <div style="margin-top:18px">
+            <button type="button" class="btn-primary">Adicionar Receita</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2>Histórico de Transações</h2>
+        <p>Visualize suas receitas e despesas mais recentes.</p>
+
+        <div style="margin-top:18px">
+          <div class="history-box">Nenhuma transação adicionada ainda.</div>
+        </div>
+      </section>
+    </main>
+
+  </div>
 </body>
 </html>
