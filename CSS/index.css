@@ -1,0 +1,13 @@
+
+
+button:hover {
+  background-color: #2980b9;
+}
+
+.resultado {
+  margin-top: 30px;
+  white-space: pre-wrap;
+  background: #ecf0f1;
+  padding: 15px;
+  border-radius: 5px;
+}
