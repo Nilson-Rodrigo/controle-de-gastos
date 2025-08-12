@@ -36,7 +36,7 @@ Node.js (para executar localmente)
 Prompt/Alert do navegador para interação
 
 📂 Estrutura do Projeto
-scss
+``scss
 Copiar
 Editar
 .
@@ -44,28 +44,28 @@ Editar
 ├── style.css
 ├── script.ts
 ├── script.js (gerado pelo TypeScript)
-└── README.md
+└── README.md``
 📦 Como Executar
 Clone o repositório
 
-bash
+``bash
 Copiar
 Editar
 git clone https://github.com/seu-usuario/seu-repositorio.git
-Abra o projeto
+Abra o projeto ``
 
-bash
+``bash
 Copiar
 Editar
 cd seu-repositorio
-Compile o TypeScript (se necessário)
+Compile o TypeScript (se necessário)``
 
-bash
+``bash
 Copiar
 Editar
 tsc script.ts
 Abra o index.html no navegador
-Ou use uma extensão como Live Server no VS Code para rodar em 127.0.0.1:5500.
+Ou use uma extensão como Live Server no VS Code para rodar em 127.0.0.1:5500. ``
 
 📜 Licença
 Este projeto está sob a licença MIT — veja o arquivo LICENSE para mais detalhes.
