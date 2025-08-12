@@ -1,6 +1,6 @@
 class ControleDeGastos { // minha classe 
 
-    listaSalarios: Array<number> = []
+    listaSalarios: Array<number> = [];
     listaReceitas: Array<number> = [];
     listaDespesas: Array<number> = [];
 
