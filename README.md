@@ -30,33 +30,19 @@ Menu de opções:
 
 ```bash
 📂 Estrutura do Projeto
-scss
-Copiar
-Editar
-.
-├── index.html
-├── style.css
-├── script.ts
-├── script.js (gerado pelo TypeScript)
-└── README.md
+
+
 📦 Como Executar
 Clone o repositório
 
 
-Copiar
-Editar
+
 git clone https://github.com/seu-usuario/seu-repositorio.git
 Abra o projeto
 
-bash
-Copiar
-Editar
 cd seu-repositorio
 Compile o TypeScript (se necessário)
 
-bash
-Copiar
-Editar
 tsc script.ts
 Abra o index.html no navegador
 Ou use uma extensão como Live Server no VS Code para rodar em 127.0.0.1:5500.
