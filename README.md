@@ -20,10 +20,6 @@ Menu de opções:
 ## 🛠 Tecnologias Utilizadas
 - TypeScript
 
-- HTML
-
-- CSS
-
 - Node.js (para executar localmente)
 
 - Prompt/Alert do navegador para interação
