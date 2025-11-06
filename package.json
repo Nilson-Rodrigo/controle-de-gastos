@@ -1,16 +1,23 @@
 {
   "name": "controle-de-gastos",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "start": "parcel source/index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rikelry/controle-de-gastos.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Rikelry/controle-de-gastos/issues"
+  },
+  "homepage": "https://github.com/Rikelry/controle-de-gastos#readme",
+  "description": "",
   "devDependencies": {
-    "typescript": "^5.8.3"
+    "parcel": "^2.16.1",
+    "typescript": "^5.9.3"
   }
 }
