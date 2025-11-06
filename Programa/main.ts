@@ -1,6 +1,6 @@
 class ControleDeGastos { // minha classe 
 
-    listaSalarios: Array<number> = []
+    listaSalarios: Array<number> = [];
     listaReceitas: Array<number> = [];
     listaDespesas: Array<number> = [];
 
@@ -190,7 +190,7 @@ class ControleDeGastos { // minha classe
             return;
         }
 
-        let texto = "===== RECEITAS =====\n";
+      let texto = "===== SALÁRIOS =====\n";
         for (let i = 0; i < this.listaSalarios.length; i++) {
             texto += `${i + 1} - R$ ${this.listaSalarios[i].toFixed(2)}\n`;
         }
@@ -290,7 +290,5 @@ VALOR RESTANTE: R$ ${valorRestante}`;
 }
 
 
-
 let usuario = new ControleDeGastos();
 usuario.iniciar();
-

@@ -181,7 +181,7 @@ class ControleDeGastos {
             alert("Não há salários para remover.");
             return;
         }
-        let texto = "===== RECEITAS =====\n";
+        let texto = "===== SALÁRIOS =====\n";
         for (let i = 0; i < this.listaSalarios.length; i++) {
             texto += `${i + 1} - R$ ${this.listaSalarios[i].toFixed(2)}\n`;
         }
