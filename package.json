@@ -2,11 +2,8 @@
   "name": "controle-de-gastos",
   "version": "1.0.0",
   "scripts": {
-  "start": "parcel source/index.html"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Rikelry/controle-de-gastos.git"
+
+    "start": "parcel source/index.html"
   },
   "keywords": [],
   "author": "",
@@ -19,5 +16,9 @@
   "devDependencies": {
     "parcel": "^2.16.1",
     "typescript": "^5.9.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rikelry/controle-de-gastos.git"
   }
 }
