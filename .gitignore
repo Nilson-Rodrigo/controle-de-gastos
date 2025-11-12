@@ -1,8 +1,26 @@
-node_modules/  
+# Ignorar dependências
+node_modules/
 
+# Ignorar pasta de build
 dist/
-build/
 
-*.log
+# Ignorar cache do Parcel
+.parcel-cache/
+
+# Logs e relatórios
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Arquivos de ambiente (se existirem)
 .env
-.vscode
+.env.local
+.env.development
+.env.production
+
+# Sistema e editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

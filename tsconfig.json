@@ -1,12 +1,10 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
-    "outDir": "./Programa/js",
-    "rootDir": "./",
-    "strict": true
+  "target": "es6",
+  "module": "es6",
+  "strict": true,
+  "esModuleInterop": true,
+  "outDir": "./dist"
   },
-  "include": ["**/*"],
-  "exclude": ["node_modules"]
+  "include": ["source"]
 }
-
