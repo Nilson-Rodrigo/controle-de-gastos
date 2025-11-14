@@ -1,8 +1,12 @@
-node_modules/  
-
+# Node e build
+node_modules/
 dist/
-build/
+.parcel-cache/
 
-*.log
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ambiente
 .env
-.vscode
