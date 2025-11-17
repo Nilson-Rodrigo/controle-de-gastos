@@ -8,6 +8,7 @@ export class ControleDeGastos {
     private menu = new MenuPrincipal(this.salarios, this.receitas, this.despesas);
 
     public iniciar(): void {
-        this.menu.exibir();
+        this.menu.exibir();       
     }
 }
+

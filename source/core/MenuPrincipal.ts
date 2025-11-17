@@ -7,7 +7,7 @@ export class MenuPrincipal {
         private salarios: ListaFinancas,
         private receitas: ListaFinancas,
         private despesas: ListaFinancas
-    ) {}
+    ) { }
 
     public descricao(): string {
         return `Este programa ajuda você a controlar seus gastos mensais de forma simples e prática.`;
@@ -59,21 +59,18 @@ export class MenuPrincipal {
             }
         }
     }
-
     private adicionar(lista: ListaFinancas, tipo: string): void {
         let instrucao = 0;
         while (instrucao !== 2) {
-            instrucao = Number(prompt(`1 - adicionar ${tipo}\n2 - sair`));
-            switch (instrucao) {
-                case 1:
-                    const valor = Number(prompt(`Digite o valor da ${tipo}:`));
-                    lista.adicionar(valor);
-                    break;
-                case 2:
-                    break;
-                default:
-                    alert("Opção inválida.");
-                    break;
+            instrucao = Number(prompt(`1 - Adicionar ${tipo}\n2 - Sair`));
+            if (instrucao == 1) {
+                const valor = Number(prompt(`Digite o valor da ${tipo}:`));
+                lista.adicionar(valor);
+                return;
+            } else if (instrucao == 2) {
+                return;
+            } else {
+                alert("Opção inválida");
             }
         }
     }
@@ -96,7 +93,6 @@ export class MenuPrincipal {
                 break;
             default:
                 alert("Opção inválida.");
-                break;
         }
     }
 
@@ -124,13 +120,12 @@ export class MenuPrincipal {
 
     private gerarResumo(): void {
         const resumo = new ResumoFinanceiro(this.salarios, this.receitas, this.despesas);
-        switch (resumo.temHistorico()) {
-            case true:
-                alert(resumo.gerar());
-                break;
-            case false:
-                alert("Não há dados registrados.");
-                break;
+        if (resumo.temHistorico()) {
+            alert(resumo.gerar());
+            return;
+        } else {
+            alert("Não há dados registrados.");
+            return;
         }
     }
 

@@ -6,37 +6,32 @@ export class ListaFinancas {
 
     public adicionar(valor: number): void {
         const item = new Financa(valor);
-        switch (item.validar()) {
-            case true:
-                this.lista.push(item);
-                alert("Valor adicionado com sucesso!");
-                break;
-            case false:
-                alert("Erro ao digitar, verifique o valor informado!");
-                break;
+        if (item.validar() == true) {
+            this.lista.push(item);
+            alert("Valor adicionado com sucesso!");
+        } else {
+            alert("Erro ao digitar, verifique o valor informado!");
         }
     }
 
     public remover(): void {
-        switch (this.lista.length) {
-            case 0:
-                alert("Nenhum item para remover.");
-                return;
-            default:
-                let texto = "";
-                for (let i = 0; i < this.lista.length; i++) {
-                    texto += `${i + 1} - R$ ${this.lista[i].valor.toFixed(2)}\n`;
-                }
-                const indice = Number(prompt(`${texto}\nDigite o número que deseja remover:`));
-                switch (true) {
-                    case !isNaN(indice) && indice >= 1 && indice <= this.lista.length:
-                        this.lista.splice(indice - 1, 1);
-                        alert("Removido com sucesso.");
-                        break;
-                    default:
-                        alert("Índice inválido.");
-                        break;
-                }
+        if (this.lista.length == 0) {
+
+            alert("Nenhum item para remover.");
+        }
+        else {
+            let texto = "";
+            for (let i = 0; i < this.lista.length; i++) {
+                texto += `${i + 1} - R$ ${this.lista[i].valor.toFixed(2)}\n`;
+            }
+            const indice = Number(prompt(`${texto}\nDigite o número que deseja remover:`));
+
+            if (!isNaN(indice) && indice >= 1 && indice <= this.lista.length) {
+                this.lista.splice(indice - 1, 1);
+                alert("Removido com sucesso.");
+            } else {
+                alert("Índice inválido.");
+            }
         }
     }
 

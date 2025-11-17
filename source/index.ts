@@ -2,7 +2,7 @@
 import { ControleDeGastos } from "./app/ControleDeGastos";
 
 
-const app = new ControleDeGastos();
+const app = new ControleDeGastos;
 
 
 app.iniciar();
