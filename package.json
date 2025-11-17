@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-"start": "parcel source/index.html"
-},
+  "start": "parcel source/html/index.html"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
