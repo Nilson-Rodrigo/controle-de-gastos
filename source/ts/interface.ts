@@ -3,7 +3,7 @@ export class InterfaceDoUsuario {
     /* * * * * MÉTODOS DE ENTRADA DO USUÁRIO * * * * */
 
     public static obterOpcaoMenuPrincipal(): number {
-        const input = prompt(`MENU PRINCIPAL - Digite a opção desejada:
+        const input = prompt(`Digite a opção desejada:
 
     1 - Adicionar Salário
     2 - Adicionar Receita
