@@ -1,0 +1,265 @@
+# Refatoração Arquitetural — Controle Financeiro
+
+## Diagnóstico do Projeto Atual
+
+Problemas arquiteturais do projeto:
+
+| Problema | Arquivo | Impacto |
+|---|---|---|
+| `MenuPrompt` instancia `SistemaFinanceiro` diretamente | `menuPrompt.ts` | Viola DIP — acoplamento concreto |
+| `Transacao` mistura dados e lógica de validação | `Transacao.ts` | Viola SRP |
+| `SistemaFinanceiro` gerencia 3 listas e calcula resumo | `SistemaFinanceiro.ts` | Viola SRP |
+| Não existe repositório — lógica de armazenamento embutida | `SistemaFinanceiro.ts` | Impossibilita troca de banco de dados |
+| Não existe caso de uso explícito | — | Regras de negócio misturadas com infraestrutura |
+| `IFinanceiro` agrupa operações de tipos diferentes | `IFinanceiro.ts` | Viola ISP |
+| Strings literais de tipo (`"salario"`, `"receita"`, `"despesa"`) | `SistemaFinanceiro.ts` | Número mágico em forma de string — frágil |
+| Formatação de texto no `MenuPrompt` | `menuPrompt.ts` | Viola SRP — apresentação misturada com lógica de UI |
+| `index.ts` instancia `SistemaFinanceiro` concretamente | `index.ts` | Viola DIP |
+
+---
+
+## Arquitetura Proposta
+
+A estrutura será baseada em **Clean Architecture** com separação explícita em camadas:
+
+```
+source/
+├── dominio/
+│   ├── entidades/
+│   │   └── Transacao.ts               [MODIFY]
+│   ├── enumeradores/
+│   │   └── TipoTransacao.ts           [NEW]
+│   ├── excecoes/
+│   │   └── ValorInvalidoErro.ts       [NEW]
+│   ├── interfaces/
+│   │   ├── IRepositorioTransacoes.ts  [NEW]
+│   │   └── IResumoFinanceiro.ts       [NEW]
+│   └── objetos-de-valor/
+│       └── ResumoFinanceiro.ts        [MODIFY]
+│
+├── aplicacao/
+│   ├── casos-de-uso/
+│   │   ├── AdicionarSalario.ts        [NEW]
+│   │   ├── AdicionarReceita.ts        [NEW]
+│   │   ├── AdicionarDespesa.ts        [NEW]
+│   │   ├── RemoverTransacao.ts        [NEW]
+│   │   ├── ListarTransacoes.ts        [NEW]
+│   │   └── GerarResumo.ts             [NEW]
+│   └── servicos/
+│       └── ServicoFinanceiro.ts       [REPLACES SistemaFinanceiro.ts]
+│
+├── infraestrutura/
+│   └── repositorios/
+│       └── RepositorioEmMemoria.ts    [REPLACES ListaTransacoes.ts + SistemaFinanceiro internals]
+│
+├── apresentacao/
+│   └── prompt/
+│       ├── MenuPrompt.ts              [MODIFY]
+│       └── FormatadorTexto.ts         [NEW]
+│
+└── main/
+    ├── fabricas/
+    │   └── FabricaSistema.ts          [NEW]
+    └── index.ts                       [MODIFY]
+
+source/index.html                      [MODIFY]
+```
+
+---
+
+## Decisões Arquiteturais por Princípio SOLID
+
+### SRP — Single Responsibility Principle
+
+**`Transacao`**: A entidade **não deve mais validar a si mesma**. A validação de entrada será responsabilidade dos casos de uso. `Transacao` passa a ser apenas um objeto de dados imutável (Value Object).
+
+**`ServicoFinanceiro`**: Orquestra os casos de uso, mas **não gerencia listas nem calcula resumo**. A gestão da lista é delegada ao repositório; o cálculo do resumo é responsabilidade de `GerarResumo`.
+
+**`MenuPrompt`**: Dividida em duas responsabilidades: interação com o usuário (`MenuPrompt`) e formatação de texto (`FormatadorTexto`).
+
+### OCP — Open/Closed Principle
+
+**`IRepositorioTransacoes`**: Define o contrato para persistência. Novas implementações (`RepositorioSQLite`, `RepositorioPostgres`) podem ser adicionadas **sem modificar** os casos de uso.
+
+**Casos de uso**: Cada caso de uso é uma classe fechada. Novos comportamentos são adicionados criando novas classes, não modificando as existentes.
+
+### LSP — Liskov Substitution Principle
+
+**`IRepositorioTransacoes`**: Qualquer implementação (memória, SQLite, Postgres) pode substituir outra sem que os casos de uso precisem saber qual está sendo usada.
+
+### ISP — Interface Segregation Principle
+
+**`IFinanceiro` será eliminada** e substituída por interfaces menores e mais coesas:
+- `IRepositorioTransacoes` — contrato de persistência
+- `IResumoFinanceiro` — contrato do objeto de resumo
+
+Cada caso de uso recebe apenas o que precisa (o repositório), não uma interface monolítica.
+
+### DIP — Dependency Inversion Principle
+
+**`ServicoFinanceiro`** recebe `IRepositorioTransacoes` via construtor (injeção de dependência).
+**`MenuPrompt`** recebe `ServicoFinanceiro` via construtor — nunca instancia dependências diretamente.
+**`FabricaSistema`** (Factory Method) é o único local que conhece as implementações concretas. O resto do sistema depende apenas de abstrações.
+
+---
+
+## Padrões GoF Aplicados
+
+| Padrão | Onde | Justificativa |
+|---|---|---|
+| **Factory Method** | `FabricaSistema.ts` | Centraliza a criação e o wiring de dependências. O resto do sistema não sabe qual repositório está sendo usado |
+| **Strategy** | `IRepositorioTransacoes` | Permite trocar a estratégia de persistência (memória → SQLite → Postgres) sem alterar a lógica de negócio |
+| **Value Object** (não GoF, mas DDD) | `Transacao`, `ResumoFinanceiro` | Imutabilidade e clareza semântica — dados sem identidade mutável |
+| **Command** (implícito) | Casos de uso | Cada caso de uso é um comando isolado e independente com `.executar()` |
+
+---
+
+## Proposed Changes
+
+### Domínio (camada mais interna — sem dependências externas)
+
+#### [NEW] `source/dominio/enumeradores/TipoTransacao.ts`
+Substitui as strings mágicas `"salario" | "receita" | "despesa"` por um enum tipado e seguro.
+
+#### [MODIFY] `source/dominio/entidades/Transacao.ts`
+Remove a lógica de validação (violava SRP). Torna-se um objeto de dados imutável. Usa `TipoTransacao` ao invés de string literal.
+
+#### [MODIFY] `source/dominio/objetos-de-valor/ResumoFinanceiro.ts`
+Move-se para a camada de domínio. Permanece como Value Object. Implementa `IResumoFinanceiro`.
+
+#### [NEW] `source/dominio/interfaces/IRepositorioTransacoes.ts`
+Contrato de persistência. Define `adicionar`, `remover`, `listar`, `somar` por tipo de transação.
+
+#### [NEW] `source/dominio/interfaces/IResumoFinanceiro.ts`
+Contrato do objeto de valor resumo financeiro.
+
+#### [NEW] `source/dominio/excecoes/ValorInvalidoErro.ts`
+Classe de exceção de domínio para valores inválidos. Evita retornos booleanos opacos.
+
+---
+
+### Aplicação (casos de uso e orquestração)
+
+#### [NEW] `source/aplicacao/casos-de-uso/AdicionarSalario.ts`
+Valida o valor e delega ao repositório. Lança `ValorInvalidoErro` se inválido.
+
+#### [NEW] `source/aplicacao/casos-de-uso/AdicionarReceita.ts`
+Idem, para receitas.
+
+#### [NEW] `source/aplicacao/casos-de-uso/AdicionarDespesa.ts`
+Idem, para despesas.
+
+#### [NEW] `source/aplicacao/casos-de-uso/RemoverTransacao.ts`
+Remove por tipo e índice. Retorna boolean ou lança exceção.
+
+#### [NEW] `source/aplicacao/casos-de-uso/ListarTransacoes.ts`
+Consulta por tipo e retorna lista imutável.
+
+#### [NEW] `source/aplicacao/casos-de-uso/GerarResumo.ts`
+Calcula e retorna `ResumoFinanceiro`.
+
+#### [MODIFY → NEW] `source/aplicacao/servicos/ServicoFinanceiro.ts`
+Substitui `SistemaFinanceiro.ts`. Orquestra os casos de uso recebendo `IRepositorioTransacoes` por injeção.
+
+---
+
+### Infraestrutura (implementações concretas — isoladas)
+
+#### [NEW] `source/infraestrutura/repositorios/RepositorioEmMemoria.ts`
+Implementa `IRepositorioTransacoes` com armazenamento em listas na memória.
+Substitui `ListaTransacoes.ts` (que será removido).
+
+---
+
+### Apresentação (UI — camada mais externa)
+
+#### [MODIFY] `source/apresentacao/prompt/MenuPrompt.ts`
+Recebe `ServicoFinanceiro` por injeção. Apenas gerencia o fluxo de interação com o usuário via `prompt`/`alert`.
+
+#### [NEW] `source/apresentacao/prompt/FormatadorTexto.ts`
+Centraliza toda a formatação de texto/exibição: listas, resumos, mensagens. Extrai responsabilidade de formatação do `MenuPrompt`.
+
+---
+
+### Main (composição e inicialização)
+
+#### [NEW] `source/main/fabricas/FabricaSistema.ts`
+**Factory Method**: único ponto que instancia `RepositorioEmMemoria` e injeta em `ServicoFinanceiro`. Conhece as implementações concretas.
+
+#### [MODIFY] `source/main/index.ts`
+Simplificado: apenas usa `FabricaSistema` para montar e iniciar o sistema.
+
+#### [MODIFY] `source/index.html`
+Atualiza o `src` para apontar para `main/index.ts`.
+
+---
+
+## Arquivos a Remover
+
+| Arquivo | Motivo |
+|---|---|
+| `source/core/IFinanceiro.ts` | Substituído por interfaces menores e mais coesas |
+| `source/core/ListaTransacoes.ts` | Substituído por `RepositorioEmMemoria` |
+| `source/core/SistemaFinanceiro.ts` | Substituído por `ServicoFinanceiro` + casos de uso |
+| `source/models/` (pasta) | Movido para `dominio/entidades/` e `dominio/objetos-de-valor/` |
+| `source/app/index.ts` | Movido para `source/main/index.ts` |
+| `source/app/menuPrompt.ts` | Movido para `source/apresentacao/prompt/MenuPrompt.ts` |
+
+---
+
+## Estrutura Final
+
+```
+source/
+├── dominio/
+│   ├── entidades/
+│   │   └── Transacao.ts
+│   ├── enumeradores/
+│   │   └── TipoTransacao.ts
+│   ├── excecoes/
+│   │   └── ValorInvalidoErro.ts
+│   ├── interfaces/
+│   │   ├── IRepositorioTransacoes.ts
+│   │   └── IResumoFinanceiro.ts
+│   └── objetos-de-valor/
+│       └── ResumoFinanceiro.ts
+│
+├── aplicacao/
+│   ├── casos-de-uso/
+│   │   ├── AdicionarSalario.ts
+│   │   ├── AdicionarReceita.ts
+│   │   ├── AdicionarDespesa.ts
+│   │   ├── RemoverTransacao.ts
+│   │   ├── ListarTransacoes.ts
+│   │   └── GerarResumo.ts
+│   └── servicos/
+│       └── ServicoFinanceiro.ts
+│
+├── infraestrutura/
+│   └── repositorios/
+│       └── RepositorioEmMemoria.ts
+│
+├── apresentacao/
+│   └── prompt/
+│       ├── MenuPrompt.ts
+│       └── FormatadorTexto.ts
+│
+├── main/
+│   ├── fabricas/
+│   │   └── FabricaSistema.ts
+│   └── index.ts
+│
+└── index.html
+```
+
+---
+
+## Verification Plan
+
+### Verificação Manual
+- Compilar com `npx tsc --noEmit` para confirmar que não há erros de tipo.
+- Abrir `index.html` no navegador e verificar que o menu de `prompt`/`alert` funciona identicamente ao original.
+- Testar todas as 8 opções do menu: adicionar salário, receita, despesa, listar, remover, resumo, reiniciar, sair.
+
+### Invariante de comportamento
+O comportamento visível ao usuário (sequência de `prompt`/`alert`, mensagens exibidas, cálculo do saldo) deve ser **idêntico** ao original.
